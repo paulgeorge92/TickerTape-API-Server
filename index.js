@@ -1,9 +1,43 @@
-var http = require("http");
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const tickerTape = require('./tickertape');
+const { stringify } = require('querystring');
+const app = express();
+const port = 3000;
 
-//create a server object:
-http
-  .createServer(function(req, res) {
-    res.write("Hello World!"); //write a response to the client
-    res.end(); //end the response
-  })
-  .listen(8080); //the server object listens on port 8080
+app.use(cors());
+
+app.get('/', async(req, res) => {
+    res.send("Hello!!")
+});
+
+app.get('/getStockInfo/:sid',async (req,res)=>{
+    const sid = req.params.sid;
+    try{
+        let data = await tickerTape.getStockInfo(sid);
+    res.send(data);
+    }
+    catch(ex){
+        res.send(JSON.stringify(ex))
+    }
+});
+
+app.get('/getStockChecklist/:sid',async (req,res)=>{
+    const sid = req.params.sid;
+    let data = await tickerTape.getStockCheckList(sid);
+    res.send(data);
+});
+
+app.get('/getCurrentPrice/:sid', async(req, res)=>{
+    const sid = req.params.sid;
+    try{
+        let data = await tickerTape.getCurrentPrice(sid);
+        res.send(data);
+    }
+    catch(ex){
+        res.send(JSON.stringify(ex))
+    }
+})
+
+app.listen(port, () => console.log(`Hello world app listening on portdasdas ${port}!`))
