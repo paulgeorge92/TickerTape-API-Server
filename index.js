@@ -40,4 +40,4 @@ app.get('/getCurrentPrice/:sid', async(req, res)=>{
     }
 })
 
-app.listen(port, () => console.log(`Hello world app listening on portdasdas ${port}!`))
+app.listen()
