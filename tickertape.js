@@ -1,6 +1,9 @@
 const axios = require('axios');
 const BASE_URL = 'https://api.tickertape.in/stocks';
 
+function formatNumber(num, decimalPoints){
+  return parseFloat(num.toFixed(decimalPoints||2));
+}
 
 async function getStockInfo(sid){
     let req = {
@@ -16,19 +19,19 @@ async function getStockInfo(sid){
             "description": data.info.description,
             "url": data.slug,
             "isin": data.isin,
-            "risk": data.labels.risk.title,
-            "marketCap": data.labels.marketCap.title,
+            "riskLabel": data.labels.risk.title,
+            "marketCapLabel": data.labels.marketCap.title,
             "technicals": {
-                "52wHigh": data.ratios['52wHigh'],
-                "52wLow": data.ratios['52wLow'],
-                "beta": data.ratios['beta'],
-                "divYield": data.ratios['divYield'],
-                "mrktCapRank": data.ratios['mrktCapRank'],
-                "marketCap": data.ratios['marketCap'],
-                "pb": data.ratios['pb'],
-                "pe": data.ratios['pe'],
-                "risk": data.ratios['risk'],
-                "ltp": data.ratios['lastPrice']
+                "52wHigh": formatNumber(data.ratios['52wHigh'] || 0),
+                "52wLow": formatNumber(data.ratios['52wLow'] || 0),
+                "beta": formatNumber(data.ratios['beta'] || 0),
+                "divYield": formatNumber(data.ratios['divYield'] || 0),
+                "mrktCapRank": formatNumber(data.ratios['mrktCapRank'] || 0),
+                "marketCap": formatNumber(data.ratios['marketCap'] || 0),
+                "pb": formatNumber(data.ratios['pb'] || 0),
+                "pe": formatNumber(data.ratios['pe'] || 0),
+                "risk": formatNumber(data.ratios['risk'] || 0),
+                "ltp": formatNumber(data.ratios['lastPrice'] || 0)
             }
         }
         return body;
@@ -50,7 +53,7 @@ async function getStockCheckList(sid){
         let response = await axios(req);
         let data = response.data.data;
         
-        const getState= (checklistItem)=>!!(data.filter(item=>item.title == checklistItem)[0]?.state == "checked");
+        const getState= (checklistItem)=>!!(data.filter(item=>item.title == checklistItem)[0].state == "checked");
         
         let body = {
             'IntrinsicValue': getState('Intrinsic Value'),
@@ -78,15 +81,15 @@ async function getCurrentPrice(sid){
         let response = await axios(req);
         let data = response.data.data;
         console.log('data: ', JSON.stringify(data));
-        if(data?.length){
+        if(data && data.length){
             return {
-                price: data[0].price,
+                price: formatNumber(data[0].price || 0),
                 crossed52wH: data[0].crossedHigh,
                 crossed52wL: data[0].crossedLow,
-                change: data[0].change,
-                dayChange: data[0].dyChange,
-                weekChange: data[0].wkChange,
-                monthChange: data[0].mnChange
+                change: formatNumber(data[0].change || 0),
+                dayChange: formatNumber(data[0].dyChange || 0),
+                weekChange: formatNumber(data[0].wkChange || 0),
+                monthChange: formatNumber(data[0].mnChange || 0)
             };
         }
         return null;
@@ -96,9 +99,5 @@ async function getCurrentPrice(sid){
         throw ex;
     }
 }
-
-
-
-
 
 module.exports  = {getStockInfo,getStockCheckList, getCurrentPrice};
