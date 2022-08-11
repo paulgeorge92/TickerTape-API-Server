@@ -18,7 +18,6 @@ async function getReturns(stock, duration){
         url: `${CHART_URL}/${stock}?duration=${duration}`,
         headers: { }
     };
-    
     let res = await axios(req);
     return res.data.data[0].r;
 }
