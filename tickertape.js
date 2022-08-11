@@ -1,8 +1,8 @@
 const axios = require('axios');
 const BASE_URL = 'https://api.tickertape.in/stocks';
-const CHART_URL = 'https://api.tickertape.in/stocks/charts/inter/';
+const CHART_URL = BASE_URL + '/charts/inter';
 function formatNumber(num, decimalPoints){
-  return parseFloat(num.toFixed(decimalPoints||2));
+  return parseFloat((num||0).toFixed(decimalPoints||2));
 }
 
 const DURATION = {
@@ -20,8 +20,7 @@ async function getReturns(stock, duration){
     };
     
     let res = await axios(req);
-    
-    return res.data.data.r;
+    return res.data.data[0].r;
 }
 
 async function getStockInfo(sid){
