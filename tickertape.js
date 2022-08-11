@@ -1,37 +1,68 @@
 const axios = require('axios');
 const BASE_URL = 'https://api.tickertape.in/stocks';
-
+const CHART_URL = 'https://api.tickertape.in/stocks/charts/inter/';
 function formatNumber(num, decimalPoints){
   return parseFloat(num.toFixed(decimalPoints||2));
 }
 
+const DURATION = {
+    _1Month: "1mo",
+    _1Year: '1y',
+    _5Yr: '5y',
+    Max: 'max'
+}
+
+async function getReturns(stock, duration){
+     let req = {
+        method: 'get',
+        url: `${CHART_URL}/${stock}?duration=${duration}`,
+        headers: { }
+    };
+    
+    let res = await axios(req);
+    
+    return res.data.data.r;
+}
+
 async function getStockInfo(sid){
-    let req = {
+    let infoReq = {
         method: 'get',
         url: `${BASE_URL}/info/${sid}`,
         headers: { }
     };
     
     try{
-        let response = await axios(req);
-        let data = response.data.data;
+        let infoRes = await axios(infoReq);
+        let stock = infoRes.data.data;
+
+        let _1mnReturn = await getReturns(sid, DURATION._1Month);
+        let _1yrReturn = await getReturns(sid, DURATION._1Year);
+        let _5yrReturn = await getReturns(sid, DURATION._5Yr);
+        let maxReturn = await getReturns(sid, DURATION.Max);
+       
         let body = {
-            "description": data.info.description,
-            "url": data.slug,
-            "isin": data.isin,
-            "riskLabel": data.labels.risk.title,
-            "marketCapLabel": data.labels.marketCap.title,
+            "description": stock.info.description,
+            "url": stock.slug,
+            "isin": stock.isin,
+            "riskLabel": stock.labels.risk.title,
+            "marketCapLabel": stock.labels.marketCap.title,
             "technicals": {
-                "52wHigh": formatNumber(data.ratios['52wHigh'] || 0),
-                "52wLow": formatNumber(data.ratios['52wLow'] || 0),
-                "beta": formatNumber(data.ratios['beta'] || 0),
-                "divYield": formatNumber(data.ratios['divYield'] || 0),
-                "mrktCapRank": formatNumber(data.ratios['mrktCapRank'] || 0),
-                "marketCap": formatNumber(data.ratios['marketCap'] || 0),
-                "pb": formatNumber(data.ratios['pb'] || 0),
-                "pe": formatNumber(data.ratios['pe'] || 0),
-                "risk": formatNumber(data.ratios['risk'] || 0),
-                "ltp": formatNumber(data.ratios['lastPrice'] || 0)
+                "52wHigh": formatNumber(stock.ratios['52wHigh'] || 0),
+                "52wLow": formatNumber(stock.ratios['52wLow'] || 0),
+                "beta": formatNumber(stock.ratios['beta'] || 0),
+                "divYield": formatNumber(stock.ratios['divYield'] || 0),
+                "mrktCapRank": formatNumber(stock.ratios['mrktCapRank'] || 0),
+                "marketCap": formatNumber(stock.ratios['marketCap'] || 0),
+                "pb": formatNumber(stock.ratios['pb'] || 0),
+                "pe": formatNumber(stock.ratios['pe'] || 0),
+                "risk": formatNumber(stock.ratios['risk'] || 0),
+                "ltp": formatNumber(stock.ratios['lastPrice'] || 0)
+            },
+            "returns": {
+                "1MonthReturns": formatNumber(_1mnReturn),
+                "1YearReturns": formatNumber(_1yrReturn),
+                "5YearsReturns": formatNumber(_5yrReturn),
+                "MaxReturns": formatNumber(maxReturn),
             }
         }
         return body;
