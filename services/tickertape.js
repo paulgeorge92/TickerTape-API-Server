@@ -12,6 +12,12 @@ const ReturnPeriod = {
   Max: "max",
 };
 
+/**
+ * Returns the stock returns for a give period
+ * @param {string} sid TickerTape ID
+ * @param {ReturnPeriod} period ReturnPeriod
+ * @returns {float} Returns
+ */
 async function getReturns(sid, period) {
   let req = {
     method: "get",
@@ -22,6 +28,11 @@ async function getReturns(sid, period) {
   return res.data.data[0].r;
 }
 
+/**
+ * Returns the information for a give stock
+ * @param {string} sid TickerTape ID
+ * @returns {*} Stock Information
+ */
 async function getStockInfo(sid) {
   let infoReq = {
     method: "get",
@@ -70,6 +81,11 @@ async function getStockInfo(sid) {
   }
 }
 
+/**
+ * Returns the checklist for given stock
+ * @param {string} sid TickerTape ID
+ * @returns Checklist
+ */
 async function getStockCheckList(sid) {
   let req = {
     method: "get",
@@ -100,6 +116,11 @@ async function getStockCheckList(sid) {
   }
 }
 
+/**
+ * Returns the current price and variations for given stock
+ * @param {string} sid TickerTape ID
+ * @returns Current Price with variantions
+ */
 async function getCurrentPrice(sid) {
   let req = {
     method: "get",
@@ -129,6 +150,12 @@ async function getCurrentPrice(sid) {
   }
 }
 
+/**
+ * Returns the stock LTPs for a give period
+ * @param {string} sid TickerTape ID
+ * @param {ReturnPeriod} period ReturnPeriod
+ * @returns {{ltp:string;date:string}[]} Returns
+ */
 async function getPriceHistory(sid, period) {
   let req = {
     method: "get",
@@ -145,5 +172,6 @@ module.exports = {
   getStockInfo,
   getStockCheckList,
   getCurrentPrice,
+  getPriceHistory,
   ReturnPeriod,
 };

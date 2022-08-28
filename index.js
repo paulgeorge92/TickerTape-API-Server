@@ -26,4 +26,8 @@ app.get("/getCurrentPrice/:sid", async (req, res) => {
   res.send(await endPoints.getCurrentPrice(sid));
 });
 
+app.get("/getHistory", async (req, res) => {
+   res.send(await endPoints.getHistory());
+});
+
 app.listen();
