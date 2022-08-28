@@ -1,10 +1,11 @@
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const endPoints = require("./endPoints");
 
-const endPointPrefix = "/";
 
+const endPointPrefix = process.env.apiPrefix;
 const app = express();
 
 app.use(cors());
